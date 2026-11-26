@@ -1,0 +1,49 @@
+name: Build PWMI installers
+on:
+  workflow_dispatch:
+  push:
+    tags: ['pwmi-v*']
+permissions:
+  contents: read
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            platform: win
+            arch: x64
+          - os: macos-latest
+            platform: mac
+            arch: arm64
+          - os: macos-latest
+            platform: mac
+            arch: x64
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies and native modules
+        run: npm ci --no-audit --no-fund
+      - name: Test custom cue
+        run: npx vitest run --config config/testing/vitest.config.ts src/frontend/utils/pwmiNextGroupCue.test.ts
+      - name: Build application
+        run: npm run build
+      - name: Package unsigned PWMI edition
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npx electron-builder --config config/building/electron-builder.pwmi.cjs --${{ matrix.platform }} --${{ matrix.arch }} --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FreeShow-PWMI-${{ matrix.platform }}-${{ matrix.arch }}
+          path: |
+            dist/FreeShow-PWMI-*.exe
+            dist/FreeShow-PWMI-*.dmg
+            dist/FreeShow-PWMI-*.zip
+          if-no-files-found: error
+          retention-days: 30

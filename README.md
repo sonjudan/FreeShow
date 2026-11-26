@@ -1,3 +1,5 @@
+> **PWMI edition:** Adds an opt-in next-section badge that appears only on the last slide of each group. [Setup and installers](docs/pwmi/README.md) · [Upstream update process](docs/pwmi/MAINTENANCE.md). Original FreeShow project and license retained below.
+
 <p align='center'>
  <a href='https://freeshow.app/'>
   <img src='https://github.com/ChurchApps/FreeShow/assets/17619496/02ac9807-1f47-47fc-b895-b35f857c2b57' width=150 />

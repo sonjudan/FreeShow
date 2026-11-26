@@ -1,11 +1,12 @@
-// import { Notification, app } from "electron"
+import { app } from "electron"
 import { autoUpdater } from "electron-updater"
 import { isProd } from ".."
 
 // let notification: Notification | null
 
 export default async function checkForUpdates() {
-    if (!isProd) return
+    // Custom PWMI builds are updated from the fork after testing upstream merges.
+    if (!isProd || app.getName().toLowerCase().includes("pwmi")) return
 
     try {
         await autoUpdater.checkForUpdatesAndNotify()

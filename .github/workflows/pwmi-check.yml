@@ -1,0 +1,25 @@
+name: PWMI checks
+on:
+  pull_request:
+  push:
+    branches: [codex/pwmi]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Test last-slide cue
+        run: npx vitest run --config config/testing/vitest.config.ts src/frontend/utils/pwmiNextGroupCue.test.ts
+      - name: Check customization formatting
+        run: npx prettier --config config/formatting/.prettierrc.yaml --check src/frontend/utils/pwmiNextGroupCue.ts src/frontend/utils/pwmiNextGroupCue.test.ts
+      - name: Build frontend and Electron sources
+        run: npm run prebuild && npm run build:frontend:prod && npm run build:servers:prod && npm run build:electron:prod

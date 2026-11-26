@@ -10,7 +10,8 @@
     import { getItemText } from "../edit/scripts/textStyle"
     import { clone } from "../helpers/array"
     import { getActiveOutputs, getAllActiveOutputs, getFirstActiveOutput, getOutputLines, getOutputResolution, percentageStylePos } from "../helpers/output"
-    import { createCSSVariables } from "../helpers/showActions"
+    import { hideLastGroupCue } from "../../utils/pwmiNextGroupCue"
+    import { createCSSVariables, replaceDynamicValues } from "../helpers/showActions"
     import { isCroppedItem } from "../helpers/cropping"
     import { getStyles, getItemStyle } from "../helpers/style"
     import SlideItemTransition from "../output/transitions/SlideItemTransition.svelte"
@@ -517,7 +518,6 @@
             const verseItemText = allText.filter((a) => a.customType?.includes("disableTemplate")) || []
             const verseItemSize = Number(getStyles(verseItemText[0]?.style, true)?.["font-size"] || "") || 0
             customTypeRatio = verseItemSize / 100 || 1
-
             ;({ defaultFontSize, maxFontSize } = getAutoSizeOptions(textFit, itemFontSize, isTextboxItem))
         }
 
@@ -753,6 +753,14 @@
     // give CSS access to certain dynamic values
     $: cssVariables = createCSSVariables($variables, $outputs, isStage ? "stage" : "default", updateTrigger)
 
+    // Hide the entire badge (including its background), not just its text.
+    $: pwmiCueItem = getItemText(item).includes("{slide_group_upcoming_last")
+    $: pwmiNextGroup = pwmiCueItem ? resolvePwmiNextGroup(ref, slideIndex, $outputs, $showsCache, updateTrigger) : ""
+    $: pwmiCueStyle = hideLastGroupCue(getItemText(item), pwmiNextGroup, isTemplatePreview) ? "visibility:hidden!important;pointer-events:none;" : ""
+    function resolvePwmiNextGroup(itemRef: typeof ref, index: number, _outputs: unknown, _shows: unknown, trigger: number) {
+        return replaceDynamicValues("{slide_group_upcoming_last}", { ...itemRef, slideIndex: index }, trigger)
+    }
+
     // initialize default filter values to get the transition working (should use animation)
     // https://stackoverflow.com/questions/68632554/css-backdrop-filter-does-not-work-with-transition
     let noTransition = !transition || (transition.type || "none") === "none" || transition.duration === 0
@@ -813,7 +821,7 @@
 <!-- lyrics view must have "width: 100%;height: 100%;" set -->
 <div
     class="item"
-    style="{style ? getCustomStyle(getItemStyle(item?.style, isCroppedItem(item)), customOutputId, styleIdOverride, { $styles }) : 'width: 100%;height: 100%;'};{paddingCorrection}{foregroundFilters}{animationStyle.item || ''}{cssVariables}{fixedWidth}"
+    style="{style ? getCustomStyle(getItemStyle(item?.style, isCroppedItem(item)), customOutputId, styleIdOverride, { $styles }) : 'width: 100%;height: 100%;'};{paddingCorrection}{foregroundFilters}{animationStyle.item || ''}{cssVariables}{fixedWidth}{pwmiCueStyle}"
     class:white={key && !lines?.length}
     class:key
     class:isStage

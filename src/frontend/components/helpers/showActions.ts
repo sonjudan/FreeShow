@@ -12,6 +12,7 @@ import { AudioMicrophone } from "../../audio/audioMicrophone"
 import { AudioPlayer } from "../../audio/audioPlayer"
 import { requestMain, sendMain } from "../../IPC/main"
 import { isMainWindow, isOutputWindow } from "../../utils/common"
+import { nextGroupAtBoundary } from "../../utils/pwmiNextGroupCue"
 import { convertTXTToString, getTXT } from "../../utils/dynamicTXT"
 import { send } from "../../utils/request"
 import { convertRSSToString, getRSS } from "../../utils/rss"
@@ -1274,6 +1275,14 @@ const dynamicValues = {
         while (ref[nextParentIndex]?.type !== "parent" && nextParentIndex < ref.length) nextParentIndex++
         const group = show?.slides?.[ref[nextParentIndex]?.id]?.group || ""
         return getGroupName({ show, showId: outSlide?.id }, ref[nextParentIndex]?.id, group, nextParentIndex, false, false)
+    },
+    // PWMI: keep the normal upcoming field unchanged; templates opt into this one.
+    slide_group_upcoming_last: ({ show, ref, slideIndex, outSlide }) => {
+        const nextIndex = nextGroupAtBoundary(ref, slideIndex)
+        if (nextIndex < 0) return ""
+        const next = ref[nextIndex]
+        const group = show?.slides?.[next.id]?.group || ""
+        return getGroupName({ show, showId: outSlide?.id }, next.id, group, nextIndex, false, false)
     },
     slide_group_upcoming_color: ({ show, ref, slideIndex }) => {
         if (slideIndex < 0) return ""
