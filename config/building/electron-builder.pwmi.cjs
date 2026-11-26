@@ -16,6 +16,8 @@ upstream.extraMetadata = {
 }
 delete upstream.win.azureSignOptions
 delete upstream.afterSign
+// Let the workflow/CLI choose exactly one architecture per build.
+upstream.mac.target = ["dmg", "zip"]
 upstream.mac.identity = null
 upstream.mac.notarize = false
 upstream.publish = null
