@@ -621,6 +621,7 @@ export interface OutBackground {
 }
 
 export interface OutSlide {
+    pwmiNextSection?: string // PWMI live Ableton section cue; absent for manual slides
     id: ID
     layout?: ID
     index?: number
