@@ -21,7 +21,7 @@ You can include a prefix, e.g. `Next: {slide_group_upcoming_last}`. Set the red 
 | Pre-Chorus, second/last slide | Next group name |
 | Last group of song, final slide | Hidden |
 
-With the updated PWMI bridge, `{slide_group_upcoming_last}` follows Ableton’s SECTIONS order, including repeat/backward jumps. PWMI supplies an empty badge while the next contiguous clip continues the same group (`Verse 1 / 2`, `/ 3`), and the next section name on the final cue. Both apps must be updated to PWMI revision 4. The live badge hides one second after FreeShow receives its cue, even if the renderer recreates the text box; thumbnails/template editing retain their previews. A plain Ableton `Verse` uses FreeShow’s `Verse 1` only if no `Verse` group exists. Without PWMI cue metadata (e.g. manually selecting slides), it falls back to FreeShow arrangement order.
+With the updated PWMI bridge, `{slide_group_upcoming_last}` follows Ableton’s SECTIONS order, including repeat/backward jumps. PWMI supplies an empty badge while the next contiguous clip continues the same group (`Verse 1 / 2`, `/ 3`), and the next section name on the final cue. Both apps must be updated to PWMI revision 5. The live badge appears in the final two seconds before the next Ableton section and hides at that section boundary; thumbnails/template editing retain their previews. A plain Ableton `Verse` uses FreeShow’s `Verse 1` only if no `Verse` group exists. Without PWMI cue metadata (e.g. manually selecting slides), it falls back to FreeShow arrangement order.
 
 The existing `{slide_group_upcoming}` field is unchanged. Manual advancement, Ableton exact-slide commands, repeats, and backward jumps all recompute the result from FreeShow's current slide. Manual slides follow FreeShow arrangement order. Repeated parent groups count as separate sections; child slides belong inside their parent group.
 
@@ -47,3 +47,5 @@ npx electron-builder --config config/building/electron-builder.pwmi.cjs --mac --
 ```
 
 On Windows use `--win --x64`; for Intel Mac use `--mac --x64`. Full packaging requires the platform's native build tools. CI uses the same locked dependencies and build steps. See [MAINTENANCE.md](MAINTENANCE.md) for upstream releases.
+
+Revision 5 timing: in Auto, the live badge is empty until the final two seconds before the next Ableton section. It stays visible until the transport crosses that boundary, then hides. This uses raw transport beats and current tempo, independently of lyric lead time. The earlier one-second wall-clock timer is removed.

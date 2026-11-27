@@ -9,7 +9,7 @@
     import autosize, { getAutoSizeOptions } from "../edit/scripts/autosize"
     import { getItemText } from "../edit/scripts/textStyle"
     import { clone } from "../helpers/array"
-    import { getActiveOutputs, getAllActiveOutputs, getFirstActiveOutput, getOutputLines, getOutputResolution, getWindowOutputId, percentageStylePos } from "../helpers/output"
+    import { getActiveOutputs, getAllActiveOutputs, getFirstActiveOutput, getOutputLines, getOutputResolution, percentageStylePos } from "../helpers/output"
     import { hideLastGroupCue } from "../../utils/pwmiNextGroupCue"
     import { createCSSVariables, replaceDynamicValues } from "../helpers/showActions"
     import { isCroppedItem } from "../helpers/cropping"
@@ -756,28 +756,9 @@
     // Hide the entire badge (including its background), not just its text.
     $: pwmiCueItem = getItemText(item).includes("{slide_group_upcoming_last")
     $: pwmiNextGroup = pwmiCueItem ? resolvePwmiNextGroup(ref, slideIndex, $outputs, $showsCache, updateTrigger) : ""
-    let pwmiBadgeExpired = false
-    let pwmiBadgeKey = ""
-    let pwmiBadgeTimer: ReturnType<typeof setTimeout> | undefined
-    $: updatePwmiBadgeTimer(pwmiCueItem, pwmiNextGroup, $outputs, preview, isTemplatePreview)
-    function updatePwmiBadgeTimer(isCue: boolean, text: string, outputState: typeof $outputs, thumbnail: boolean, templatePreview: boolean) {
-        const slide = outputState[getWindowOutputId()]?.out?.slide
-        const key = !isCue || thumbnail || templatePreview || !text ? "" : JSON.stringify([slide?.id, slide?.layout, slide?.index, slide?.pwmiCueId, text])
-        if (key === pwmiBadgeKey) return
-        pwmiBadgeKey = key
-        if (pwmiBadgeTimer) clearTimeout(pwmiBadgeTimer)
-        pwmiBadgeExpired = false
-        const remaining = typeof slide?.pwmiCueShownAt === "number" ? Math.max(0, 1000 - (Date.now() - slide.pwmiCueShownAt)) : 1000
-        if (key && remaining <= 0) pwmiBadgeExpired = true
-        else if (key)
-            pwmiBadgeTimer = setTimeout(() => {
-                pwmiBadgeExpired = true
-            }, remaining)
-    }
-    onDestroy(() => {
-        if (pwmiBadgeTimer) clearTimeout(pwmiBadgeTimer)
-    })
-    $: pwmiCueStyle = pwmiBadgeExpired || hideLastGroupCue(getItemText(item), pwmiNextGroup, isTemplatePreview) ? "visibility:hidden!important;pointer-events:none;" : ""
+    // PWMI supplies an empty value outside the final two transport seconds.
+    // Do not run a wall-clock hide timer: the Ableton section boundary owns it.
+    $: pwmiCueStyle = hideLastGroupCue(getItemText(item), pwmiNextGroup, isTemplatePreview) ? "visibility:hidden!important;pointer-events:none;" : ""
     function resolvePwmiNextGroup(itemRef: typeof ref, index: number, _outputs: unknown, _shows: unknown, trigger: number) {
         return replaceDynamicValues("{slide_group_upcoming_last}", { ...itemRef, slideIndex: index }, trigger)
     }
