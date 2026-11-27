@@ -767,10 +767,12 @@
         pwmiBadgeKey = key
         if (pwmiBadgeTimer) clearTimeout(pwmiBadgeTimer)
         pwmiBadgeExpired = false
-        if (key)
+        const remaining = typeof slide?.pwmiCueShownAt === "number" ? Math.max(0, 1000 - (Date.now() - slide.pwmiCueShownAt)) : 1000
+        if (key && remaining <= 0) pwmiBadgeExpired = true
+        else if (key)
             pwmiBadgeTimer = setTimeout(() => {
                 pwmiBadgeExpired = true
-            }, 1000)
+            }, remaining)
     }
     onDestroy(() => {
         if (pwmiBadgeTimer) clearTimeout(pwmiBadgeTimer)
