@@ -1278,7 +1278,7 @@ const dynamicValues = {
     },
     // PWMI: keep the normal upcoming field unchanged; templates opt into this one.
     slide_group_upcoming_last: ({ show, ref, slideIndex, outSlide }) => {
-        if (typeof outSlide?.pwmiNextSection === "string") return outSlide.pwmiNextSection
+        if (slideIndex === outSlide?.index && typeof outSlide?.pwmiNextSection === "string") return outSlide.pwmiNextSection
         const nextIndex = nextGroupAtBoundary(ref, slideIndex)
         if (nextIndex < 0) return ""
         const next = ref[nextIndex]

@@ -21,7 +21,7 @@ You can include a prefix, e.g. `Next: {slide_group_upcoming_last}`. Set the red 
 | Pre-Chorus, second/last slide | Next group name |
 | Last group of song, final slide | Hidden |
 
-With the updated PWMI bridge, `{slide_group_upcoming_last}` follows Ableton’s SECTIONS order, including repeat/backward jumps. PWMI supplies an empty badge while the next contiguous clip continues the same group (`Verse 1 / 2`, `/ 3`), and the next section name on the final cue. Both apps must be updated to PWMI revision 2. Without PWMI cue metadata (e.g. manually selecting slides), it falls back to FreeShow arrangement order.
+With the updated PWMI bridge, `{slide_group_upcoming_last}` follows Ableton’s SECTIONS order, including repeat/backward jumps. PWMI supplies an empty badge while the next contiguous clip continues the same group (`Verse 1 / 2`, `/ 3`), and the next section name on the final cue. Both apps must be updated to PWMI revision 3. The live badge hides after one second; thumbnails/template editing retain their previews. A plain Ableton `Verse` uses FreeShow’s `Verse 1` only if no `Verse` group exists. Without PWMI cue metadata (e.g. manually selecting slides), it falls back to FreeShow arrangement order.
 
 The existing `{slide_group_upcoming}` field is unchanged. Manual advancement, Ableton exact-slide commands, repeats, and backward jumps all recompute the result from FreeShow's current slide. Manual slides follow FreeShow arrangement order. Repeated parent groups count as separate sections; child slides belong inside their parent group.
 

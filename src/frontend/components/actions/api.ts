@@ -126,7 +126,7 @@ type API_numval = { value: number }
 export type API_volume = { volume?: number; channelId?: string; useDB?: boolean }
 export type API_id_index = { id: string; index: number }
 export type API_slide = { showId?: string | "active"; slideId?: string }
-export type API_slide_index = { showId?: string; layoutId?: string; index: number; pwmiNextSection?: string }
+export type API_slide_index = { showId?: string; layoutId?: string; index: number; pwmiNextSection?: string; pwmiCueId?: string }
 export type API_disable_slide = {
     showId?: string
     layoutId?: string

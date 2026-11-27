@@ -245,7 +245,7 @@ function outputSlide(showRef, data: API_slide_index) {
     const showId = data.showId || get(activeShow)?.id || ""
     updateOut(showId, data.index, showRef)
     const activeLayout = _show(showId).get("settings.activeLayout")
-    setOutput("slide", { id: showId, layout: data.layoutId || activeLayout, index: data.index, line: 0, ...(typeof data.pwmiNextSection === "string" ? { pwmiNextSection: data.pwmiNextSection.slice(0, 200) } : {}) })
+    setOutput("slide", { id: showId, layout: data.layoutId || activeLayout, index: data.index, line: 0, ...(typeof data.pwmiNextSection === "string" ? { pwmiNextSection: data.pwmiNextSection.slice(0, 200), pwmiCueId: typeof data.pwmiCueId === "string" ? data.pwmiCueId.slice(0, 2200) : "" } : {}) })
 }
 
 export async function disableSlide(data: API_disable_slide) {
