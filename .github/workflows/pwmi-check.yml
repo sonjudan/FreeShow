@@ -19,6 +19,8 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Test last-slide cue
         run: npx vitest run --config config/testing/vitest.config.ts src/frontend/utils/pwmiNextGroupCue.test.ts
+      - name: Verify cue updates do not replay lyric transitions
+        run: node scripts/pwmi/test-cue-only.cjs
       - name: Check customization formatting
         run: npx prettier --config config/formatting/.prettierrc.yaml --check src/frontend/utils/pwmiNextGroupCue.ts src/frontend/utils/pwmiNextGroupCue.test.ts
       - name: Build frontend and Electron sources

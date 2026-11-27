@@ -49,3 +49,5 @@ npx electron-builder --config config/building/electron-builder.pwmi.cjs --mac --
 On Windows use `--win --x64`; for Intel Mac use `--mac --x64`. Full packaging requires the platform's native build tools. CI uses the same locked dependencies and build steps. See [MAINTENANCE.md](MAINTENANCE.md) for upstream releases.
 
 Revision 5 timing: in Auto, the live badge is empty until the final two seconds before the next Ableton section. It stays visible until the transport crosses that boundary, then hides. This uses raw transport beats and current tempo, independently of lyric lead time. The earlier one-second wall-clock timer is removed.
+
+Revision 6 separates upcoming badge metadata from slide content. Badge appearance/hiding updates only the cue store; it does not replay the same lyric slide, slide actions, backgrounds, or fade transitions. Real slide changes still use normal FreeShow transitions. Manual slide changes clear the live PWMI badge metadata.

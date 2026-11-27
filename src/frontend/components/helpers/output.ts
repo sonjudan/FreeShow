@@ -305,6 +305,7 @@ export function setOutput(type: string, data: any, toggle = false, outputId = ""
                 }
             }
 
+            if (type === "slide" && !data?.pwmiCueId) delete a[id].pwmiCue
             a[id].out![type] = clone(outData)
 
             // save locked overlays / outputted scenes for relaunch

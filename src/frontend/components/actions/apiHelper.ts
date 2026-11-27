@@ -243,9 +243,36 @@ function outputSlide(showRef, data: API_slide_index) {
     if (get(outLocked)) return
 
     const showId = data.showId || get(activeShow)?.id || ""
-    updateOut(showId, data.index, showRef)
     const activeLayout = _show(showId).get("settings.activeLayout")
-    setOutput("slide", { id: showId, layout: data.layoutId || activeLayout, index: data.index, line: 0, ...(typeof data.pwmiNextSection === "string" ? { pwmiCueShownAt: Date.now(), pwmiNextSection: data.pwmiNextSection.slice(0, 200), pwmiCueId: typeof data.pwmiCueId === "string" ? data.pwmiCueId.slice(0, 2200) : "" } : {}) })
+    const layoutId = data.layoutId || activeLayout
+    const isPwmi = typeof data.pwmiNextSection === "string"
+    const targetIds = getActiveOutputs(get(outputs), true, false, true)
+    const cue = { showId, layoutId, index: data.index, text: (data.pwmiNextSection || "").slice(0, 200), cueId: (data.pwmiCueId || "").slice(0, 2200) }
+    const unchanged =
+        targetIds.length > 0 &&
+        targetIds.every((id) => {
+            const slide = get(outputs)[id]?.out?.slide
+            return slide?.id === showId && slide?.layout === layoutId && slide?.index === data.index
+        })
+    if (isPwmi && unchanged) {
+        outputs.update((state) => {
+            targetIds.forEach((id) => {
+                state[id].pwmiCue = cue
+            })
+            return state
+        })
+        return // Badge timing must never replay slide actions or lyric fades.
+    }
+    updateOut(showId, data.index, showRef)
+    setOutput("slide", { id: showId, layout: layoutId, index: data.index, line: 0, ...(isPwmi ? { pwmiCueId: cue.cueId } : {}) })
+    if (isPwmi)
+        outputs.update((state) => {
+            Object.values(state).forEach((output) => {
+                const slide = output.out?.slide
+                if (slide?.id === showId && slide?.layout === layoutId && slide?.index === data.index) output.pwmiCue = cue
+            })
+            return state
+        })
 }
 
 export async function disableSlide(data: API_disable_slide) {

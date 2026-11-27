@@ -1153,7 +1153,7 @@ export function replaceDynamicValues(text: string, { showId, layoutId, slideInde
 
         if (!dynamicValues[dynamicId]) return ""
 
-        const rawValue = dynamicValues[dynamicId]({ show, ref, slideIndex, layout, projectRef, outSlide, bgPath, videoData, audioTime, audioDuration, audioPath, offset, liveOutput: isOutputWin }) ?? ""
+        const rawValue = dynamicValues[dynamicId]({ show, ref, slideIndex, layout, projectRef, pwmiCue: output?.pwmiCue, outSlide, bgPath, videoData, audioTime, audioDuration, audioPath, offset, liveOutput: isOutputWin }) ?? ""
         const value = Array.isArray(rawValue) ? rawValue : rawValue.toString()
 
         // send data to output
@@ -1277,7 +1277,12 @@ const dynamicValues = {
         return getGroupName({ show, showId: outSlide?.id }, ref[nextParentIndex]?.id, group, nextParentIndex, false, false)
     },
     // PWMI: keep the normal upcoming field unchanged; templates opt into this one.
-    slide_group_upcoming_last: ({ show, ref, slideIndex, outSlide, liveOutput }) => {
+    slide_group_upcoming_last: ({ show, ref, slideIndex, outSlide, liveOutput, pwmiCue }) => {
+        if (pwmiCue && outSlide?.id === pwmiCue.showId && outSlide?.layout === pwmiCue.layoutId && outSlide?.index === pwmiCue.index) {
+            if (slideIndex === outSlide.index) return pwmiCue.text
+            if (liveOutput) return ""
+        }
+        if (pwmiCue && liveOutput) return ""
         if (typeof outSlide?.pwmiNextSection === "string") {
             if (slideIndex === outSlide.index) return outSlide.pwmiNextSection
             // An outgoing slide may still be mounted during its fade. Never

@@ -6,6 +6,7 @@ export interface Outputs {
 }
 
 export interface Output {
+    pwmiCue?: { showId: string; layoutId: string; index: number; text: string; cueId: string }
     id?: string
     hideFromPreview?: boolean
     stageOutput?: string
