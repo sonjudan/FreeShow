@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
   push:
     tags: ['pwmi-v*']
+    branches: ['codex/pwmi']
+    paths: ['.pwmi/upstream.json', '.github/workflows/pwmi-build.yml']
 permissions:
   contents: read
 jobs:
