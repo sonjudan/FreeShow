@@ -4,7 +4,7 @@ on:
   push:
     tags: ['pwmi-v*']
     branches: ['codex/pwmi']
-    paths: ['.pwmi/upstream.json', '.github/workflows/pwmi-build.yml']
+    paths: ['.pwmi/upstream.json', '.github/workflows/pwmi-build.yml', 'src/**']
 permissions:
   contents: read
 jobs:
